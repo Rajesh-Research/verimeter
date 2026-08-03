@@ -372,6 +372,55 @@ export default function Home() {
       });
   }, []);
 
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError("");
+
+    fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        role: "investigator"
+      })
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((data) => {
+            throw new Error(data.detail || "Registration failed");
+          });
+        }
+        return res.json();
+      })
+      .then(() => {
+        setIsRegisterMode(false);
+        const params = new URLSearchParams();
+        params.append("username", email);
+        params.append("password", password);
+        return fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+          method: "POST",
+          body: params,
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        });
+      })
+      .then((res) => {
+        if (res && !res.ok) throw new Error("Automatic login failed.");
+        return res ? res.json() : null;
+      })
+      .then((data) => {
+        if (data) {
+          setAuthenticated(true);
+          setToken(data.access_token);
+        }
+      })
+      .catch((err) => {
+        setLoginError(err.message);
+      });
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
@@ -801,8 +850,12 @@ export default function Home() {
             <div className="w-full max-w-md bg-[#18181b] border border-[#27272a] p-8 rounded-xl space-y-6">
               <div className="text-center space-y-1">
                 <Shield className="w-10 h-10 text-blue-500 mx-auto" />
-                <h2 className="text-xl font-bold tracking-tight mt-3">Investigator Sign In</h2>
-                <p className="text-xs text-zinc-500">Provide VSU registered credentials to log in</p>
+                <h2 className="text-xl font-bold tracking-tight mt-3">
+                  {isRegisterMode ? "Investigator Sign Up" : "Investigator Sign In"}
+                </h2>
+                <p className="text-xs text-zinc-500">
+                  {isRegisterMode ? "Create a new researcher credentials account" : "Provide VSU registered credentials to log in"}
+                </p>
               </div>
 
               {loginError && (
@@ -828,20 +881,20 @@ export default function Home() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={isRegisterMode ? handleRegister : handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-xs text-zinc-400">Researcher Email:</label>
+                    <label className="text-xs text-zinc-400 font-medium">Researcher Email:</label>
                     <input
                       type="email"
                       required
                       placeholder="researcher@justice.gov"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#09090b] border border-[#27272a] focus:border-blue-500 text-sm px-4 py-2.5 rounded-lg focus:outline-none"
+                      className="w-full bg-[#09090b] border border-[#27272a] focus:border-blue-500 text-sm px-4 py-2.5 rounded-lg focus:outline-none font-medium"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs text-zinc-400">Access Key/Password:</label>
+                    <label className="text-xs text-zinc-400 font-medium">Access Key/Password:</label>
                     <input
                       type="password"
                       required
@@ -855,8 +908,21 @@ export default function Home() {
                     type="submit"
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all mt-4"
                   >
-                    Authenticate Investigator
+                    {isRegisterMode ? "Register & Login" : "Authenticate Investigator"}
                   </button>
+                  <p className="text-center text-xs text-zinc-500 mt-4">
+                    {isRegisterMode ? "Already have an account?" : "Need an account for live uploads?"}{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginError("");
+                        setIsRegisterMode(!isRegisterMode);
+                      }}
+                      className="text-blue-500 hover:underline font-semibold focus:outline-none"
+                    >
+                      {isRegisterMode ? "Sign In" : "Register"}
+                    </button>
+                  </p>
                 </form>
               )}
             </div>
