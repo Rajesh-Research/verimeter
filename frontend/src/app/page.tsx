@@ -220,6 +220,67 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedDataset, setSelectedDataset] = useState("eoir");
   const [apiConnected, setApiConnected] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploadStatus, setUploadStatus] = useState("");
+  
+  const handleBrowseClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setUploadStatus(`Uploading ${file.name}...`);
+    
+    if (!authenticated || !token) {
+      alert("Please sign in as an authenticated investigator to upload new datasets.");
+      setUploadStatus("");
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    const datasetName = file.name.toLowerCase().replace(".csv", "").replace(/[^a-z0-9]/g, "_");
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/datasets/upload?name=${datasetName}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || "Upload failed");
+      }
+      
+      const data = await res.json();
+      setUploadStatus(`Successfully uploaded: ${data.name}. Processing...`);
+      
+      const procRes = await fetch(`${API_BASE_URL}/api/v1/datasets/process/${data.name}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      
+      if (procRes.ok) {
+        setUploadStatus(`Dataset ${data.name} uploaded and processed successfully!`);
+        alert(`Successfully processed dataset: ${data.name}`);
+      } else {
+        setUploadStatus(`Dataset ${data.name} uploaded, but processing failed.`);
+      }
+    } catch (err: any) {
+      alert(`Error during dataset upload: ${err.message}`);
+      setUploadStatus("");
+    }
+  };
   
   // Auth state
   const [authenticated, setAuthenticated] = useState(false);
@@ -686,16 +747,26 @@ export default function Home() {
               <p className="text-zinc-400 text-sm mt-1">Upload raw workload panels and run custom audits</p>
             </div>
 
-            {/* Drag & drop mock container */}
+            {/* Drag & drop raw file container */}
             <div className="border-2 border-dashed border-[#27272a] hover:border-blue-500 transition-all rounded-xl p-12 text-center bg-[#18181b]/50">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                accept=".csv"
+                className="hidden" 
+              />
               <UploadCloud className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
-              <h3 className="font-semibold text-lg">Drag & Drop raw files here</h3>
-              <p className="text-xs text-zinc-500 mt-1">Supports CSV and JSON panel structures</p>
+              <h3 className="font-semibold text-lg">Upload raw CSV panel</h3>
+              <p className="text-xs text-zinc-500 mt-1">Requires Researcher Authentication</p>
+              {uploadStatus && (
+                <p className="text-xs text-blue-400 mt-2 font-medium">{uploadStatus}</p>
+              )}
               <button
-                onClick={() => alert("Select file dialogue. Mock uploader active.")}
+                onClick={handleBrowseClick}
                 className="mt-6 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all"
               >
-                Browse Files
+                Select CSV File
               </button>
             </div>
             
@@ -710,7 +781,9 @@ export default function Home() {
                       <p className="text-[10px] text-zinc-500 mt-0.5">Processed file: {key}_panel.csv</p>
                     </div>
                     <button
-                      onClick={() => alert(`Triggering download for ${key}_panel.csv`)}
+                      onClick={() => {
+                        window.open(`${API_BASE_URL}/api/v1/datasets/download/${key}`);
+                      }}
                       className="flex items-center gap-1.5 px-3 py-1.5 border border-[#27272a] hover:bg-[#18181b] text-[10px] rounded"
                     >
                       <Download className="w-3 h-3" /> Download CSV
