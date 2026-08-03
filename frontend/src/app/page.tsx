@@ -288,8 +288,12 @@ verimeter 1.0.0
 ============================================================================`
           }
         }));
+      } else {
+        const errData = await res.json();
+        alert(`Failed to run diagnostics on ${name}: ${errData.detail || "Unknown error"}`);
       }
-    } catch (e) {
+    } catch (e: any) {
+      alert(`Error running diagnostics: ${e.message}`);
       console.error("Error running diagnostics:", e);
     } finally {
       setLoadingCustom(false);

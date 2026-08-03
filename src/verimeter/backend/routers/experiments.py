@@ -25,11 +25,29 @@ def run_experiment(
         
     df = pd.read_csv(processed_path)
     
+    # Dynamic column mapping fallback
+    caseload_col = "caseload"
+    examined_col = "examined"
+    
+    if caseload_col not in df.columns or examined_col not in df.columns:
+        numeric_cols = df.select_dtypes(include=["number"]).columns.tolist()
+        if len(numeric_cols) >= 2:
+            caseload_col = numeric_cols[0]
+            examined_col = numeric_cols[1]
+        elif len(df.columns) >= 2:
+            caseload_col = df.columns[0]
+            examined_col = df.columns[1]
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Dataset must contain at least two columns to run verification analysis."
+            )
+            
     try:
-        # Run verimeter capacity elasticity diagnostics
+        # Run verimeter capacity elasticity diagnostics on resolved columns
         ela = capacity_elasticity(
-            df["caseload"], 
-            df["examined"], 
+            df[caseload_col], 
+            df[examined_col], 
             require_cointegration=req.require_cointegration
         )
         
