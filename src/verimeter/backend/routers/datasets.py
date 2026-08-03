@@ -117,3 +117,39 @@ def download_processed_panel(
          raise HTTPException(status_code=404, detail="Processed panel file does not exist on disk yet. Trigger process first.")
          
     return FileResponse(processed_path, filename=dataset.processed_filename)
+
+
+@router.delete("/delete/{name}", response_model=dict)
+def delete_dataset(
+    name: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    dataset = db.query(Dataset).filter(Dataset.name == name).first()
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+        
+    if dataset.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="You do not have permission to delete this dataset")
+        
+    raw_path = os.path.join("datasets", "raw", dataset.raw_filename)
+    processed_path = os.path.join("datasets", "processed", dataset.processed_filename)
+    
+    if os.path.exists(raw_path):
+        try:
+            os.remove(raw_path)
+        except Exception as e:
+            print(f"Error removing raw file: {e}")
+            
+    if os.path.exists(processed_path):
+        try:
+            os.remove(processed_path)
+        except Exception as e:
+            print(f"Error removing processed file: {e}")
+            
+    db.query(Job).filter(Job.name == f"process_{name}").delete()
+    
+    db.delete(dataset)
+    db.commit()
+    
+    return {"message": f"Dataset {name} deleted successfully"}

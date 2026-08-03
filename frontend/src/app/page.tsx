@@ -8,7 +8,7 @@ import {
 import { 
   Shield, Activity, Settings, Database, UserCheck, 
   TrendingUp, Download, RefreshCw, UploadCloud, CheckCircle, Info, 
-  HelpCircle, ChevronRight, AlertCircle
+  HelpCircle, ChevronRight, AlertCircle, Trash
 } from "lucide-react";
 
 const API_BASE_URL = typeof window !== "undefined" && window.location.hostname !== "localhost"
@@ -297,6 +297,34 @@ verimeter 1.0.0
       console.error("Error running diagnostics:", e);
     } finally {
       setLoadingCustom(false);
+    }
+  };
+
+  const handleDeleteDataset = async (name: string) => {
+    if (!confirm(`Are you sure you want to permanently delete the custom dataset: ${name}?`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/datasets/delete/${name}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      
+      if (res.ok) {
+        alert(`Successfully deleted dataset: ${name}`);
+        if (selectedDataset === name) {
+          setSelectedDataset("eoir");
+        }
+        fetchCustomDatasets(token);
+      } else {
+        const errData = await res.json();
+        alert(`Failed to delete dataset: ${errData.detail || "Unknown error"}`);
+      }
+    } catch (e: any) {
+      alert(`Error deleting dataset: ${e.message}`);
     }
   };
 
@@ -951,10 +979,11 @@ verimeter 1.0.0
               </button>
             </div>
             
-            {/* Sample panels listing */}
+            {/* Predefined & Custom panels listing */}
             <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-6">
-              <h3 className="font-semibold text-sm mb-4">Sample Processed Panels in datasets/processed/</h3>
+              <h3 className="font-semibold text-sm mb-4">Institutional & Uploaded Panels</h3>
               <div className="space-y-3">
+                {/* Predefined Panels */}
                 {Object.entries(EMPIRICAL_DATA).map(([key, data]) => (
                   <div key={key} className="flex justify-between items-center p-3 bg-[#09090b] rounded-lg border border-[#27272a]">
                     <div>
@@ -969,6 +998,32 @@ verimeter 1.0.0
                     >
                       <Download className="w-3 h-3" /> Download CSV
                     </button>
+                  </div>
+                ))}
+
+                {/* Custom Uploaded Panels */}
+                {customDatasets.map((d: any) => (
+                  <div key={d.name} className="flex justify-between items-center p-3 bg-[#09090b] rounded-lg border border-blue-900/30">
+                    <div>
+                      <h4 className="font-semibold text-xs text-blue-400">{d.name.toUpperCase().replace(/_/g, " ")}</h4>
+                      <p className="text-[10px] text-zinc-500 mt-0.5">Uploaded file: {d.name}_raw.csv</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          window.open(`${API_BASE_URL}/api/v1/datasets/download/${d.name}`);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-[#27272a] hover:bg-[#18181b] text-[10px] rounded font-medium"
+                      >
+                        <Download className="w-3 h-3" /> Download CSV
+                      </button>
+                      <button
+                        onClick={() => handleDeleteDataset(d.name)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-red-950 hover:bg-red-950/20 text-[10px] text-red-400 rounded font-medium"
+                      >
+                        <Trash className="w-3 h-3" /> Delete
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
