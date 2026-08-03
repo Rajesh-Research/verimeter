@@ -718,15 +718,15 @@ VSU Standard Assessment:
               Welcome & Guide
             </button>
             <button
-              onClick={() => setActiveTab("dashboard")}
+              onClick={() => setActiveTab("datasets")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                activeTab === "dashboard"
+                activeTab === "datasets"
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
                   : "text-zinc-400 hover:bg-[#27272a] hover:text-white"
               }`}
             >
-              <Activity className="w-4 h-4" />
-              Research Dashboard
+              <Database className="w-4 h-4" />
+              Dataset Explorer
             </button>
             <button
               onClick={() => setActiveTab("simulations")}
@@ -740,15 +740,15 @@ VSU Standard Assessment:
               Policy Simulator
             </button>
             <button
-              onClick={() => setActiveTab("datasets")}
+              onClick={() => setActiveTab("dashboard")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                activeTab === "datasets"
+                activeTab === "dashboard"
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
                   : "text-zinc-400 hover:bg-[#27272a] hover:text-white"
               }`}
             >
-              <Database className="w-4 h-4" />
-              Dataset Explorer
+              <Activity className="w-4 h-4" />
+              Research Dashboard
             </button>
           </nav>
         </div>
@@ -877,10 +877,10 @@ VSU Standard Assessment:
               </div>
 
               <button
-                onClick={() => setActiveTab("dashboard")}
+                onClick={() => setActiveTab("datasets")}
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/20"
               >
-                Go to Research Dashboard →
+                Go to Dataset Explorer →
               </button>
             </div>
           </div>
@@ -1147,6 +1147,18 @@ VSU Standard Assessment:
                     />
                   </div>
                 </div>
+
+                <div className="pt-4">
+                  <button
+                    onClick={() => {
+                      setDashboardMode("simulated");
+                      setActiveTab("dashboard");
+                    }}
+                    className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg text-xs transition-all shadow-lg shadow-green-500/20 text-center"
+                  >
+                    Proceed to Research Dashboard →
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1240,14 +1252,22 @@ VSU Standard Assessment:
                       <h4 className="font-semibold text-xs text-zinc-300">{data.title}</h4>
                       <p className="text-[10px] text-zinc-500 mt-0.5">Processed file: {key}_panel.csv</p>
                     </div>
-                    <button
-                      onClick={() => {
-                        window.open(`${API_BASE_URL}/api/v1/datasets/download/${key}`);
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 border border-[#27272a] hover:bg-[#18181b] text-[10px] rounded"
-                    >
-                      <Download className="w-3 h-3" /> Download CSV
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDatasetSelect(key)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] rounded font-medium transition-all"
+                      >
+                        Choose Dataset
+                      </button>
+                      <button
+                        onClick={() => {
+                          window.open(`${API_BASE_URL}/api/v1/datasets/download/${key}`);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-[#27272a] hover:bg-[#18181b] text-[10px] rounded"
+                      >
+                        <Download className="w-3 h-3" /> Download CSV
+                      </button>
+                    </div>
                   </div>
                 ))}
 
@@ -1259,6 +1279,12 @@ VSU Standard Assessment:
                       <p className="text-[10px] text-zinc-500 mt-0.5">Uploaded file: {d.name}_raw.csv</p>
                     </div>
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDatasetSelect(d.name)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] rounded font-medium transition-all"
+                      >
+                        Choose Dataset
+                      </button>
                       <button
                         onClick={() => {
                           window.open(`${API_BASE_URL}/api/v1/datasets/download/${d.name}`);
