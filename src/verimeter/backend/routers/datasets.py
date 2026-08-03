@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import os
@@ -11,6 +11,13 @@ from verimeter.backend.routers.auth import get_current_user
 from verimeter.backend.tasks import task_run_pipeline
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
+
+# Define sync wrapper for background execution
+def run_pipeline_sync(name: str):
+    try:
+        task_run_pipeline(name)
+    except Exception as e:
+        print(f"Error running pipeline in background: {e}")
 
 @router.post("/upload", response_model=DatasetResponse)
 def upload_dataset(
@@ -59,6 +66,7 @@ def upload_dataset(
 @router.post("/process/{name}", response_model=JobResponse)
 def process_dataset(
     name: str,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -66,13 +74,13 @@ def process_dataset(
     if not dataset:
         raise HTTPException(status_code=404, detail="Dataset not found")
         
-    # Queue parsing background task
-    task = task_run_pipeline.delay(name)
+    # Queue parsing background task using FastAPI's native BackgroundTasks
+    background_tasks.add_task(run_pipeline_sync, name)
     
     job = Job(
         name=f"process_{name}",
         status="RUNNING",
-        task_id=task.id,
+        task_id=f"fastapi_job_{name}",
         owner_id=current_user.id
     )
     db.add(job)
