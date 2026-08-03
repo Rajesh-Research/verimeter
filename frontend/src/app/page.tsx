@@ -581,18 +581,26 @@ VSU Standard Assessment:
     runLocalSimulation();
   }, [simParams, selectedDataset, customStats]);
 
-  // Check health on load
+  // Check health on load and poll every 10s to handle sleep spin-up times
   useEffect(() => {
-    fetch(`${API_BASE_URL}/health`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "healthy") {
-          setApiConnected(true);
-        }
-      })
-      .catch(() => {
-        setApiConnected(false);
-      });
+    const checkHealth = () => {
+      fetch(`${API_BASE_URL}/health`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "healthy") {
+            setApiConnected(true);
+          } else {
+            setApiConnected(false);
+          }
+        })
+        .catch(() => {
+          setApiConnected(false);
+        });
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const [isRegisterMode, setIsRegisterMode] = useState(false);
