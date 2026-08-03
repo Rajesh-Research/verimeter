@@ -748,6 +748,17 @@ VSU Standard Assessment:
               Policy Simulator
             </button>
             <button
+              onClick={() => setActiveTab("results")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                activeTab === "results"
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                  : "text-zinc-400 hover:bg-[#27272a] hover:text-white"
+              }`}
+            >
+              <CheckCircle className="w-4 h-4" />
+              Results & Validation
+            </button>
+            <button
               onClick={() => setActiveTab("dashboard")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "dashboard"
@@ -890,6 +901,149 @@ VSU Standard Assessment:
               >
                 Go to Dataset Explorer →
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================== TAB 5: RESULTS & VALIDATION */}
+        {activeTab === "results" && (
+          <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#09090b]">
+            <div className="max-w-4xl space-y-6">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-10 h-10 text-green-500 animate-pulse" />
+                <div>
+                  <h1 className="text-2xl font-extrabold tracking-tight text-white">Results & Validation</h1>
+                  <p className="text-zinc-400 text-sm mt-1">Dynamic plain-language translation of the econometric audit and policy impact</p>
+                </div>
+              </div>
+
+              <div className="border-t border-[#27272a] my-6" />
+
+              {/* 1. Dataset Context Panel */}
+              <div className="bg-[#18181b] border border-[#27272a] p-6 rounded-xl space-y-4">
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Database className="w-5 h-5 text-blue-400" />
+                  Dataset Context: {activeData?.title || "Custom Dataset"}
+                </h2>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  You are auditing the <strong>{activeData?.title || "Custom Dataset"}</strong> dataset. {activeData?.desc || "Workload panel metrics processed in the cloud backend."}
+                </p>
+                <div className="grid grid-cols-3 gap-4 pt-2">
+                  <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
+                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Workload (Caseload)</span>
+                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                      The incoming claims or caseload volume. Higher numbers put pressure on the institution's static workforce.
+                    </p>
+                  </div>
+                  <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
+                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Throughput (Examined)</span>
+                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                      The volume of cases examined/adjudicated by staff. If this is less than the caseload, a backlog accumulates.
+                    </p>
+                  </div>
+                  <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
+                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Reported Quality</span>
+                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                      The error rate calculated from completed cases. When cases pile up unexamined in the backlog, this reported error rate drops, creating the Backlog Illusion.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Policy Interventions Impact Panel */}
+              <div className="bg-[#18181b] border border-[#27272a] p-6 rounded-xl space-y-4">
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-green-400 animate-spin-slow" />
+                  Active Policy Interventions
+                </h2>
+                <div className="space-y-4">
+                  <div className="p-4 bg-[#09090b] rounded-lg border border-[#27272a] space-y-2">
+                    <h3 className="font-semibold text-xs text-white">Capacity Boost (Auditor Hiring):</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      You configured a hiring booster of <strong>+{Math.round(simParams.hiring_boost_pct * 100)}% staff</strong> starting in <strong>Period {simParams.hiring_period}</strong>.
+                      This intervention increases throughput capacity.
+                      {simParams.hiring_boost_pct >= 0.20 
+                        ? " This increase is strong enough to start clearing the backlog bottleneck." 
+                        : " This hiring rate is too low to prevent backlog accumulation."
+                      }
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-[#09090b] rounded-lg border border-[#27272a] space-y-2">
+                    <h3 className="font-semibold text-xs text-white">Auditor Training:</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      You applied a quality training program reducing errors by <strong>-{Math.round(simParams.quality_training_pct * 100)}%</strong> starting in <strong>Period {simParams.training_period}</strong>.
+                      This intervention directly improves the accuracy of the staff.
+                      {simParams.quality_training_pct >= 0.15 
+                        ? " This quality intervention creates a real, lasting improvement in accuracy." 
+                        : " The training intensity is too mild to cause significant quality benefits."
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Research Dashboard Verdict Explained */}
+              <div className="bg-[#18181b] border border-[#27272a] p-6 rounded-xl space-y-4">
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-blue-400" />
+                  Validation Verdict: {activeData?.verdict === "SPURIOUS" ? "SPURIOUS (Backlog Illusion)" : "NO INVERSION (Genuine Quality)"}
+                </h2>
+                
+                <div className="p-4 rounded-lg leading-relaxed text-xs border bg-[#09090b] border-[#27272a]">
+                  <h3 className="font-semibold text-xs text-white mb-2">Plain Language Interpretation:</h3>
+                  {activeData?.verdict === "SPURIOUS" ? (
+                    <p className="text-amber-400">
+                      <strong>WARNING: The Quality Gain is a Backlog Illusion.</strong> Your capacity constraints remain unresolved. Because the backlog is growing, incoming cases are hidden from exams, making the reported error rate drop. The cointegration checks failed (t = {activeData?.eg_t?.toFixed(2) || "-1.87"}). You need to increase staff hiring (Hiring Booster) or train your auditors more to clear the backlog bottleneck.
+                    </p>
+                  ) : (
+                    <p className="text-green-400">
+                      <strong>SUCCESS: Genuine Quality Verified.</strong> Your policy intervention cleared the backlog constraint (Cointegrated = True, t = {activeData?.eg_t?.toFixed(2) || "-4.32"}). The drop in error rates matches true auditor accuracy improvements. The reported performance gains are statistically validated.
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
+                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Elasticity (Beta = {activeData?.beta?.toFixed(4) || "1.0000"})</span>
+                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                      For every 10% increase in caseload, completions change by {activeData?.beta ? Math.round(activeData.beta * 10) : "10"}%.
+                      {activeData?.beta && activeData.beta > 1.05 
+                        ? " Values above 1.0 show capacity bottleneck distortions." 
+                        : " Values close to 1.0 show a healthy scaling process."
+                      }
+                    </p>
+                  </div>
+                  <div className="bg-[#09090b] p-4 rounded-lg border border-[#27272a]">
+                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Engle-Granger test (t = {activeData?.eg_t?.toFixed(2) || "-1.87"})</span>
+                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                      {activeData?.cointegrated 
+                        ? "Passed the critical threshold (-3.95). Workload and completions share a stable long-term trend." 
+                        : "Failed to pass the critical threshold (-3.95). The relationship is unstable and spurious."
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation button */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setActiveTab("simulations")}
+                  className="px-6 py-3 border border-[#27272a] hover:bg-[#18181b] text-white font-semibold rounded-lg text-sm transition-all"
+                >
+                  ← Back to Simulator
+                </button>
+                <button
+                  onClick={() => {
+                    setDashboardMode("simulated");
+                    setActiveTab("dashboard");
+                  }}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/20"
+                >
+                  View Detailed Econometric Tables →
+                </button>
+              </div>
             </div>
           </div>
         )}
