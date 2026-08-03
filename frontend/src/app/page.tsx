@@ -818,6 +818,13 @@ VSU Standard Assessment:
 
               <div className="border-t border-[#27272a] my-6" />
 
+              <div className="p-6 bg-[#18181b] border border-blue-950/60 rounded-xl leading-relaxed text-sm text-zinc-300 space-y-3">
+                <h3 className="text-md font-bold text-white">Welcome to VERIMETER</h3>
+                <p>
+                  <strong>VERIMETER (Institutional Verification Diagnostics)</strong> is a state-of-the-art computational research platform developed for advancing scientific research in institutional analytics, verification science, and organizational measurement. Designed by <strong>Dr. Raul Villamarin Rodriguez</strong> and <strong>Dr. Rajesh Kumar K V</strong>, the platform unifies mathematical theory, statistical inference, empirical data pipelines, large-scale simulations, and interactive visual analytics into a reproducible research ecosystem that supports transparent, evidence-based decision-making and high-impact scientific discovery.
+                </p>
+              </div>
+
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-white">What is VERIMETER?</h2>
                 <p className="text-zinc-400 text-sm leading-relaxed">
