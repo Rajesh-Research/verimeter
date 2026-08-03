@@ -217,7 +217,7 @@ verimeter 1.0.0
 };
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("welcome");
   const [selectedDataset, setSelectedDataset] = useState("eoir");
   const [apiConnected, setApiConnected] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -594,6 +594,17 @@ verimeter 1.0.0
           {/* Navigation Links */}
           <nav className="p-4 space-y-2">
             <button
+              onClick={() => setActiveTab("welcome")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                activeTab === "welcome"
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                  : "text-zinc-400 hover:bg-[#27272a] hover:text-white"
+              }`}
+            >
+              <Info className="w-4 h-4" />
+              Welcome & Guide
+            </button>
+            <button
               onClick={() => setActiveTab("dashboard")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "dashboard"
@@ -661,6 +672,107 @@ verimeter 1.0.0
       {/* ======================================================= MAIN CONTENT WRAPPER */}
       <main className="flex-1 flex flex-col overflow-hidden">
         
+        {/* =================================================== TAB 0: WELCOME PAGE */}
+        {activeTab === "welcome" && (
+          <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#09090b]">
+            <div className="max-w-4xl space-y-6">
+              <div className="flex items-center gap-4">
+                <Shield className="w-12 h-12 text-blue-500 animate-pulse" />
+                <div>
+                  <h1 className="text-3xl font-extrabold tracking-tight text-white">VERIMETER</h1>
+                  <p className="text-zinc-400 text-sm mt-1">VSU Quality Verification & Institutional Diagnostics</p>
+                </div>
+              </div>
+
+              <div className="border-t border-[#27272a] my-6" />
+
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-white">What is VERIMETER?</h2>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  <strong>VERIMETER</strong> is an econometric audit and diagnostic platform designed to verify whether reported quality improvements in high-volume public and private institutions (such as court backlogs, patent approvals, FDA clearances, or clinical trials) are <strong>genuine</strong> or if they are mathematical illusions caused by capacity constraints (called the <strong>"Backlog Illusion"</strong>).
+                </p>
+                <div className="bg-amber-900/10 border border-amber-800/30 p-4 rounded-xl flex gap-3 text-sm text-amber-200">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold text-amber-400">The Backlog Illusion: </span>
+                    When caseloads outpace staff capacity, a backlog grows. Because backlog cases remain unexamined, their error rates are not recorded. As a result, the reported error rate of the institution drops, creating the appearance of quality improvement when, in reality, the institution is simply overwhelmed. VERIMETER uses time-series cointegration and resampling statistics to separate true improvements from backlog-driven illusions.
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-white">Who Benefits?</h2>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-[#18181b] border border-[#27272a] p-5 rounded-xl space-y-2">
+                    <h3 className="font-bold text-sm text-blue-400 font-sans">Agency Heads</h3>
+                    <p className="text-xs text-zinc-500 leading-relaxed">Understand if staff training is working, or if you need to hire more staff (Capacity Boosters) to clear caseloads.</p>
+                  </div>
+                  <div className="bg-[#18181b] border border-[#27272a] p-5 rounded-xl space-y-2">
+                    <h3 className="font-bold text-sm text-blue-400 font-sans">Standardization Units</h3>
+                    <p className="text-xs text-zinc-500 leading-relaxed">Verify the statistical integrity of quality reports submitted by regional branches using rigid checks.</p>
+                  </div>
+                  <div className="bg-[#18181b] border border-[#27272a] p-5 rounded-xl space-y-2">
+                    <h3 className="font-bold text-sm text-blue-400 font-sans">Econometricians</h3>
+                    <p className="text-xs text-zinc-500 leading-relaxed">Run automated Newey-West regressions and Engle-Granger unit root tests on institutional panels instantly.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-white">How to Check the Output Parameters</h2>
+                <div className="space-y-4">
+                  <div className="flex gap-4 p-4 bg-[#18181b] border border-[#27272a] rounded-xl">
+                    <div className="bg-blue-600/10 text-blue-400 font-bold px-3 py-1.5 rounded-lg h-fit text-sm">β</div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-white">Elasticity (Beta)</h4>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Measures how throughput changes with caseload. A value of β ≈ 1.0 means throughput scales proportionally. Significantly higher or lower values suggest capacity bottlenecks.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 p-4 bg-[#18181b] border border-[#27272a] rounded-xl">
+                    <div className="bg-blue-600/10 text-blue-400 font-bold px-3 py-1.5 rounded-lg h-fit text-sm">t-stat</div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-white">Engle-Granger t-stat & Cointegration</h4>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        The core validation gate. If Cointegration is <strong>True</strong>, the critical threshold is passed ($t &lt; -3.95$) and the drop in errors is genuine. If <strong>False</strong>, the drop is spurious (a backlog illusion).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 p-4 bg-[#18181b] border border-[#27272a] rounded-xl">
+                    <div className="bg-blue-600/10 text-blue-400 font-bold px-3 py-1.5 rounded-lg h-fit text-sm">HAC</div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-white">Newey-West HAC Standard Error</h4>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Adjusts the margin of error of your elasticity ($\beta$) for serial correlation in time-series panel data, providing a true margin of error.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 p-4 bg-[#18181b] border border-[#27272a] rounded-xl">
+                    <div className="bg-blue-600/10 text-blue-400 font-bold px-3 py-1.5 rounded-lg h-fit text-sm">SE</div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-white">Bootstrap & Jackknife Standard Errors</h4>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Measures the variance stability of estimates under resampling to verify that the dataset results are highly reliable.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveTab("dashboard")}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/20"
+              >
+                Go to Research Dashboard →
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* =================================================== TAB 1: RESEARCH DASHBOARD */}
         {activeTab === "dashboard" && (
           <div className="flex-1 flex overflow-hidden">
