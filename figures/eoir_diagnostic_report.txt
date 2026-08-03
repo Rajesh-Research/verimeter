@@ -1,0 +1,27 @@
+============================================================================
+INSTITUTIONAL VERIFICATION REPORT
+verimeter 1.0.0
+============================================================================
+
+COVERAGE
+  mean 0.1317, range [0.0598, 0.1864], rising +25.8% over the panel   [census: no sampling interval applies]
+
+CAPACITY SCALING
+  beta = 1.1230   HAC se 0.1119   95% CI [0.8698, 1.3763]
+  H0 beta=1: p = 0.3003    H0 beta=0: p = 0.0000
+  caseload range 5.41x    cointegrated: False    EG t -1.87
+  SPURIOUS: log-kappa and log-lambda are not cointegrated (Engle-Granger t = -1.87 vs 5% critical -3.95). The apparent relation is a shared trend, not a response of capacity to caseload. No verdict issued.
+
+REPORTED ERROR RATE (what the dashboard shows)
+  0.031509 -> 0.008980   (-71.5%)
+  Reported rate fell, but the capacity estimate is not
+  reliable, so no inference about true quality is warranted.
+
+DEPTH
+  NOT IDENTIFIED. delta and q enter the likelihood only as
+  their product. No sample size separates them.
+  Supply a second independent screen.
+
+NOTES
+  - no second screen: delta and q not separately identified.
+============================================================================

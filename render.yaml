@@ -1,0 +1,14 @@
+services:
+  # Python FastAPI Backend Container Service
+  - type: web
+    name: verimeter-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./verimeter.db # local SQLite instance inside the container
+      - key: CELERY_ALWAYS_EAGER
+        value: "True"                  # runs task queue in-process to stay within free tier resource limits
+      - key: SECRET_KEY
+        value: "verimeter_production_secret_key_2026"

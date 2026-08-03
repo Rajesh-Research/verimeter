@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: verimeter_db
+    restart: always
+    environment:
+      POSTGRES_DB: verimeter
+      POSTGRES_USER: verimeter_admin
+      POSTGRES_PASSWORD: verimeter_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - verimeter_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: verimeter_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - verimeter_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: verimeter_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://verimeter_admin:verimeter_password@db:5432/verimeter
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_ALWAYS_EAGER=False
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - verimeter_net
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: verimeter_celery_worker
+    restart: always
+    command: celery -A verimeter.backend.tasks.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://verimeter_admin:verimeter_password@db:5432/verimeter
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_ALWAYS_EAGER=False
+    depends_on:
+      - db
+      - redis
+    networks:
+      - verimeter_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: verimeter_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - verimeter_net
+
+volumes:
+  pgdata:
+
+networks:
+  verimeter_net:
+    driver: bridge

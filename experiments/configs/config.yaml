@@ -1,0 +1,10 @@
+defaults:
+  - experiment: all
+  - logger: default
+  - _self_
+
+seed: 42
+output_dir: "figures"
+table_dir: "paper/tables"
+simulation_runs: 150
+require_cointegration: true

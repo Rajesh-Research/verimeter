@@ -1,0 +1,3 @@
+name: simulation
+run_simulations: true
+run_empirical: false

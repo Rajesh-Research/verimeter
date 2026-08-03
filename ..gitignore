@@ -1,0 +1,33 @@
+# Python caches and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.hydra/
+outputs/
+multirun/
+
+# Databases
+*.db
+*.sqlite
+
+# Node/Frontend
+node_modules/
+.next/
+out/
+.env*.local
+
+# Outputs and storage fallbacks
+results/storage/
+backups/
+paper/*.pdf
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/manuscript.html
+C:\Users\Rajkumar-SOB\.gemini\antigravity\brain\aefaf161-d568-4380-bdaa-d340c3997915/

@@ -1,0 +1,84 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{The Denominator That Isn't There:\\Why Detected Errors Cannot Measure Institutional Judgment}
+\author{Research Architect \& Principal Research Engineer\\Verification Standards Unit (VSU)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Institutional performance dashboards frequently rely on detected error counts to monitor quality. We show that these metrics suffer from a fundamental identification failure. Specifically, the detected error rate depends on caseload ($\lambda$), verification coverage ($\kappa/\lambda$), verification depth ($\delta$), and the true error rate ($q$). We prove a unified non-identification theorem: from detected error counts alone, an institution cannot separately identify any of these components. Furthermore, capacity constraints generate a systematic ``backlog illusion'': as caseload grows, capacity constraints force coverage to fall, causing the reported error rate to improve even when true quality is constant or deteriorating. We propose a general measurement framework and a hardened open-source instrument, \texttt{verimeter}, to diagnose capacity elasticity ($\beta$) and recover true error rates using capture-recapture designs.
+\end{abstract}
+
+\section{Introduction}
+Monitoring quality and error rates is a cornerstone of organizational governance. However, the denominators of these error rates—the set of cases actually examined—are rarely reported or incorporated into diagnostics. In this paper, we establish the theoretical properties of verification diagnostics and show how capacity constraints lead to systematic measurement inversions.
+
+\section{The Unified Non-Identification Theorem}
+Let $\lambda$ be the caseload, $\kappa$ the number of cases the review function can examine, $q$ the true underlying error rate, and $\delta$ the probability that an examined error is recognized. Under standard independent review architectures:
+\begin{equation}
+D \sim \text{Binomial}(\kappa, \delta q)
+\end{equation}
+The Fisher information about caseload $\lambda$ carried by the detected error count $D$ is a structural zero under a fixed capacity $\kappa$. We generalize this to capacity elasticity $\beta$, where $\kappa = c \lambda^\beta$. The Fisher information about caseload scales with $\beta^2$, meaning that under sub-proportional staffing ($\beta < 1$), the detected count carries almost no information about load.
+
+Furthermore, $\delta$ and $q$ enter the likelihood only as their product. Thus, they are structurally confounded at any sample size. An institution cannot distinguish between having few errors and being unable to see them.
+
+\section{The Backlog Illusion and Capacity Elasticity}
+When review capacity is sub-proportional ($\beta < 1$), the examined share $\kappa/\lambda \propto \lambda^{\beta-1}$ falls as caseload rises. This causes the reported error rate to fall, creating an illusion of improving quality. We estimate the elasticity $\beta$ using historical panel data from the Executive Office for Immigration Review (EOIR).
+
+\subsection{Empirical Analysis of the EOIR Panel}
+Table~\ref{tab:eoir_panel} displays the panel data constructed from the EOIR Workload and Adjudication Statistics.
+
+\begin{table}[htbp]
+\centering
+\caption{The EOIR Panel Data}
+\label{tab:eoir_panel}
+\input{tables/eoir_panel.tex}
+\end{table}
+
+We fit the capacity elasticity using an Engle-Granger cointegration gate to protect against spurious regressions on trending series. Table~\ref{tab:attenuation} displays the capacity elasticity and its measurement error sensitivity.
+
+\begin{table}[htbp]
+\centering
+\caption{Capacity Elasticity and Attenuation Sensitivity}
+\label{tab:attenuation}
+\input{tables/attenuation_sensitivity.tex}
+\end{table}
+
+The estimated elasticity $\beta$ is significantly less than 1, confirming a severe capacity constraint. This explains the apparent reduction in the reported error rate shown in Figure~\ref{fig:eoir_inversion}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/eoir_inversion.png}
+\caption{EOIR Declining Coverage vs reported error rate improvement.}
+\label{fig:eoir_inversion}
+\end{figure}
+
+\section{Verification Depth: Separating Detection from Quality}
+To separate reviewer detection capability ($\delta$) from true error rates ($q$), we require a second independent screen. Under a capture-recapture protocol, we can estimate both parameters. However, positive correlation in reviewer skill ($\rho$) introduces an understatement bias. Table~\ref{tab:dependence} displays the sensitivity of capture-recapture estimates to screen dependence.
+
+\begin{table}[htbp]
+\centering
+\caption{Screen Dependence Bounds}
+\label{tab:dependence}
+\input{tables/dependence_bounds.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/dependence_bias.png}
+\caption{Capture-Recapture understatement under screen dependence.}
+\label{fig:dependence_bias}
+\end{figure}
+
+\section{Conclusion}
+To prevent transparency penalties and gaming, institutions must transition from reporting scalar error counts to reporting multi-dimensional verification vectors ($\kappa, \delta, q$) defined by evidence-based audit protocols.
+
+\end{document}

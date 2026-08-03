@@ -1,0 +1,101 @@
+[
+  {
+    "dataset": "EOIR",
+    "observations": 11,
+    "beta": 1.1230198143465198,
+    "hac_se": 0.11194486319929028,
+    "boot_se": 0.1361990985383361,
+    "jack_se": 0.13202024789298675,
+    "eg_t": -1.8711932155083257,
+    "cointegrated": false,
+    "verdict": "NO INVERSION"
+  },
+  {
+    "dataset": "USPTO",
+    "observations": 10,
+    "beta": 1.8983864359665943,
+    "hac_se": 0.4357010462686262,
+    "boot_se": 0.9053264299090388,
+    "jack_se": 0.8822783826515829,
+    "eg_t": -1.6927678553897054,
+    "cointegrated": false,
+    "verdict": "UNINFORMATIVE"
+  },
+  {
+    "dataset": "PTAB",
+    "observations": 10,
+    "beta": 0.23463824737331282,
+    "hac_se": 0.13546080596939028,
+    "boot_se": 0.16605207269151603,
+    "jack_se": 0.18691707872232896,
+    "eg_t": -3.4667850655652197,
+    "cointegrated": false,
+    "verdict": "INVERSION CONFIRMED (beta = 0.235, H0 beta=1 rejected p = 0.0005; capacity is flat). Recorded error rate falls as load rises, at constant true quality."
+  },
+  {
+    "dataset": "FDA",
+    "observations": 10,
+    "beta": 1.0188160610107677,
+    "hac_se": 0.03136139432264288,
+    "boot_se": 0.0556189085560986,
+    "jack_se": 0.04585872797624719,
+    "eg_t": -2.4868374237065765,
+    "cointegrated": false,
+    "verdict": "NO INVERSION"
+  },
+  {
+    "dataset": "EUDSA",
+    "observations": 8,
+    "beta": 0.9792710011328601,
+    "hac_se": 0.004855067829801855,
+    "boot_se": 0.011444009145972678,
+    "jack_se": NaN,
+    "eg_t": NaN,
+    "cointegrated": false,
+    "verdict": "UNINFORMATIVE"
+  },
+  {
+    "dataset": "CLINVAR",
+    "observations": 10,
+    "beta": 1.0184588833100499,
+    "hac_se": 0.055539983726509305,
+    "boot_se": 0.06390997798434275,
+    "jack_se": 0.07094762073600343,
+    "eg_t": -2.724273827224532,
+    "cointegrated": false,
+    "verdict": "NO INVERSION"
+  },
+  {
+    "dataset": "PCAOB",
+    "observations": 10,
+    "beta": 0.9218213257399317,
+    "hac_se": 0.15727178793874516,
+    "boot_se": 0.29565044432363097,
+    "jack_se": 0.32601566559064993,
+    "eg_t": -2.007268387419804,
+    "cointegrated": false,
+    "verdict": "NO INVERSION"
+  },
+  {
+    "dataset": "HOSPITAL",
+    "observations": 10,
+    "beta": 1.8396142247946445,
+    "hac_se": 0.34388493218794314,
+    "boot_se": 0.5069893113669787,
+    "jack_se": 0.5131914968985477,
+    "eg_t": -3.01160107834828,
+    "cointegrated": false,
+    "verdict": "UNINFORMATIVE"
+  },
+  {
+    "dataset": "ASRS",
+    "observations": 10,
+    "beta": 0.839710255905125,
+    "hac_se": 0.02443016060693045,
+    "boot_se": 0.05165071676451969,
+    "jack_se": 0.04344233536722545,
+    "eg_t": -2.2905487286232087,
+    "cointegrated": false,
+    "verdict": "UNINFORMATIVE"
+  }
+]

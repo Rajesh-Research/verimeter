@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "verimeter"
+version = "1.0.0"
+description = "VERIMETER: Institutional Verification Diagnostics"
+authors = ["Verification Standards Unit (VSU)"]
+readme = "README.md"
+packages = [{include = "verimeter", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = ">=2.1.0"
+scipy = ">=1.14.0"
+pandas = ">=2.2.0"
+statsmodels = ">=0.14.2"
+matplotlib = ">=3.9.0"
+hydra-core = "^1.3.2"
+pdfplumber = "^0.11.0"
+requests = "^2.30.0"
+fastapi = ">=0.110.0"
+pydantic = {extras = ["email"], version = ">=2.6.0"}
+sqlalchemy = ">=2.0.0"
+pyjwt = ">=2.8.0"
+celery = ">=5.3.0"
+uvicorn = ">=0.28.0"
+python-multipart = ">=0.0.7"
+alembic = ">=1.11.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.0"
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
