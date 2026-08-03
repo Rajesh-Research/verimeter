@@ -26,13 +26,25 @@ def task_run_pipeline(self, dataset_name: str) -> str:
     """
     logger.info(f"Starting pipeline task for dataset: {dataset_name}")
     from empirical.pipeline import PIPELINES
+    import os
+    import pandas as pd
     
-    if dataset_name not in PIPELINES:
-        raise ValueError(f"Unknown dataset pipeline: {dataset_name}")
+    if dataset_name in PIPELINES:
+        pipeline_cls = PIPELINES[dataset_name]
+        pipeline = pipeline_cls()
+        df = pipeline.run()
+    else:
+        # Fallback to process custom uploaded CSV panel
+        raw_path = os.path.join("datasets", "raw", f"{dataset_name}_raw.csv")
+        processed_path = os.path.join("datasets", "processed", f"{dataset_name}_panel.csv")
         
-    pipeline_cls = PIPELINES[dataset_name]
-    pipeline = pipeline_cls()
-    df = pipeline.run()
+        if not os.path.exists(raw_path):
+            raise ValueError(f"Raw dataset file does not exist: {raw_path}")
+            
+        logger.info(f"Processing custom dataset: {dataset_name} from {raw_path}")
+        df = pd.read_csv(raw_path)
+        os.makedirs(os.path.dirname(processed_path), exist_ok=True)
+        df.to_csv(processed_path, index=False)
     
     metadata = {
         "status": "success",
